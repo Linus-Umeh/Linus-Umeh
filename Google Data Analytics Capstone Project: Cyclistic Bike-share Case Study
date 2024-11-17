@@ -1,0 +1,50 @@
+/* Combining the 12 months data from  may 2024 to june 2023 into a signle table named `solid-scheme-439215-k5.Case_Study.cyclistic_bike_capstone_project` for analysis.*/
+
+CREATE TABLE solid-scheme-439215-k5.Case_Study.cyclistic_bike_capstone_project AS (
+ SELECT * FROM `solid-scheme-439215-k5.Case_Study.2023_06` UNION ALL
+ SELECT * FROM `solid-scheme-439215-k5.Case_Study.2023_07` UNION ALL
+ SELECT * FROM `solid-scheme-439215-k5.Case_Study.2023_08` UNION ALL
+ SELECT * FROM `solid-scheme-439215-k5.Case_Study.2023_09` UNION ALL
+ SELECT * FROM `solid-scheme-439215-k5.Case_Study.2023_10` UNION ALL
+ SELECT * FROM `solid-scheme-439215-k5.Case_Study.2023_11` UNION ALL
+ SELECT * FROM `solid-scheme-439215-k5.Case_Study.2023_12` UNION ALL
+ SELECT * FROM `solid-scheme-439215-k5.Case_Study.2024_01` UNION ALL
+ SELECT * FROM `solid-scheme-439215-k5.Case_Study.2024_02` UNION ALL
+ SELECT * FROM `solid-scheme-439215-k5.Case_Study.2024_03` UNION ALL
+ SELECT * FROM `solid-scheme-439215-k5.Case_Study.2024_04` UNION ALL
+ SELECT * FROM `solid-scheme-439215-k5.Case_Study.2024_05` ) ;
+
+/* Table was modified to a new table by deleting rows with no entries for start_staion_name and end_station_name rows, and removing 'docked_bike' from the rideable_type. 
+The new resulting table was named: `solid-scheme-439215-k5.Case_Study.cyclistic_bike_clean`.  */
+
+CREATE TABLE solid-scheme-439215-k5.Case_Study.cyclistic_bike_clean AS(
+  
+ SELECT 
+  * 
+ FROM
+  `solid-scheme-439215-k5.Case_Study.cyclistic_bike_capstone_project` 
+ WHERE
+  start_station_name <> "null"
+  AND end_station_name <> "null"
+  AND rideable_type <> "docked_bike"
+);
+
+/* New columns has to be created in the new talbe to include: ride_length, time_of_day, day_of_week, month. 
+NB: I opted for creation of new table each step of the way, so that I can easily track the modifications and manipulation been done to the datasets. 
+Also, since I used the BigQuery Sandbox package, using UPDATE TABLE function is not avaliable.
+The name of the new table created with the added columns is: `solid-scheme-439215-k5.Case_Study.cyclistic_bike_ride`. */
+
+CREATE TABLE solid-scheme-439215-k5.Case_Study.cyclistic_bike_ride AS (
+
+ SELECT
+  *,
+  TIMESTAMP_DIFF(ended_at, started_at,MINUTE )  AS ride_length,
+  EXTRACT(hour from started_at) AS time_of_day,
+  FORMAT_DATE('%A', DATE(started_at)) AS day_of_week,
+  FORMAT_DATE('%B', DATE(started_at)) AS month,
+ 
+FROM 
+ `solid-scheme-439215-k5.Case_Study.cyclistic_bike_clean` 
+):
+
+
